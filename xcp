@@ -1,0 +1,104 @@
+#!/bin/bash
+
+# xcp - pipe terminal output to clipboard in X
+# OS X has a neat command-line tool called pbcopy which takes standard 
+# input and places it in the clipboard to paste into other applications.
+# xcp is the Linux version of pbcopy/pbpaste
+
+# Copyright (C) 2015  Digidog - Released under GPL v3
+
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+DIR="$(dirname "$(readlink -f "$0")")"
+
+function Help(){
+
+cat << EOF
+
+xcp - pipe terminal output to clipboard in X
+
+OS X has a neat command-line tool called pbcopy which takes the standard 
+input and places it in the clipboard to paste into other applications.
+xcp is the Linux version of pbcopy/pbpaste
+
+xcp  - Copyright (C) 2015 Digidog - GPL v3
+
+This program comes with ABSOLUTELY NO WARRANTY.
+This is free software, and you are welcome to redistribute it
+under certain conditions of GPL v3 by crediting the original author
+
+How to use (example terminal commands):
+---------------------------------------
+
+cat ~/.ssh/id_dsa.pub | xcp   ... copies output into clipboard
+xcp -p                        ... outputs the content of clipboard
+<output> | xcp -f <tofile>    ... saves content of clipboard into file
+xcp -H                        ... shows history
+xcp --help (or) xcp -h        ... shows this help 
+xcp -x (or) xcp --hide        ... copies output into clipboard without log
+
+EOF
+
+}
+
+function ErrMissingDep(){
+cat << EOF
+Your system does not has <xclip> or <xsel> installed to run this terminal utility.
+PLease follow the *First steps* and *installation guidlines* of playa at github/diqidoq/playa
+EOF
+    Help
+    exit 1
+}
+
+if hash xclip 2>/dev/null ; then
+    function clipc(){ xclip -selection clipboard ; }
+    function clipp(){ xclip -selection clipboard -o ; }
+elif hash xsel 2>/dev/null ; then
+    function clipc(){ xsel --clipboard --input ; }
+    function clipp(){ xsel --clipboard --output ; }
+else
+    ErrMissingDep
+fi
+
+case "$1" in
+	-h|--help)
+		Help
+		exit 1
+	;;
+	-p|--paste)
+    clipp
+	;;
+  -H|--history)
+    cat $DIR/xcp.log
+	;;
+	-f|--file)
+    clipc
+    clipp >> $DIR/xcp.log
+    if [[ ! "$2" ]] ; then 
+      Help
+      exit 1
+    else
+      clipp >> $2
+    fi  
+	;;
+ 	-x|--hide)
+    clipc
+	;;
+	*)
+    clipc
+    clipp >> $DIR/xcp.log
+	;;
+esac
+
+exit 0
