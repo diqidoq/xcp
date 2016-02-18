@@ -20,7 +20,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-DIR="$(dirname "$(readlink -f "$0")")"
+xcpDIR="$(dirname "$(readlink -f "$0")")"
 
 function Help(){
 
@@ -54,8 +54,8 @@ EOF
 
 function ErrMissingDep(){
 cat << EOF
-Your system does not has <xclip> or <xsel> installed to run this terminal utility.
-PLease follow the *First steps* and *installation guidlines* of playa at github/diqidoq/playa
+Your system does not has <xclip> or <xsel> installed required by xcp.
+PLease follow the *First steps* and *installation guidlines* on GitHub.
 EOF
     Help
     exit 1
@@ -80,11 +80,11 @@ case "$1" in
     clipp
 	;;
   -H|--history)
-    cat $DIR/xcp.log
+    cat $xcpDIR/xcp.log
 	;;
 	-f|--file)
     clipc
-    clipp >> $DIR/xcp.log
+    clipp >> $xcpDIR/xcp.log
     if [[ ! "$2" ]] ; then 
       Help
       exit 1
@@ -97,7 +97,7 @@ case "$1" in
 	;;
 	*)
     clipc
-    clipp >> $DIR/xcp.log
+    clipp >> $xcpDIR/xcp.log
 	;;
 esac
 
