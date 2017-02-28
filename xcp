@@ -57,32 +57,32 @@ cat << EOF
 Your system does not has <xclip> or <xsel> installed required by xcp.
 PLease follow the *First steps* and *installation guidlines* on GitHub.
 EOF
-    Help
-    exit 1
+  Help
+  exit 1
 }
 
 if hash xclip 2>/dev/null ; then
-    function clipc(){ xclip -selection clipboard ; }
-    function clipp(){ xclip -selection clipboard -o ; }
+  function clipc(){ xclip -selection clipboard ; }
+  function clipp(){ xclip -selection clipboard -o ; }
 elif hash xsel 2>/dev/null ; then
-    function clipc(){ xsel --clipboard --input ; }
-    function clipp(){ xsel --clipboard --output ; }
+  function clipc(){ xsel --clipboard --input ; }
+  function clipp(){ xsel --clipboard --output ; }
 else
     ErrMissingDep
 fi
 
 case "$1" in
-	-h|--help)
-		Help
-		exit 1
-	;;
-	-p|--paste)
+  -h|--help)
+    Help
+    exit 1
+  ;;
+  -p|--paste)
     clipp
-	;;
+  ;;
   -H|--history)
     cat $xcpDIR/xcp.log
-	;;
-	-f|--file)
+  ;;
+  -f|--file)
     clipc
     clipp >> $xcpDIR/xcp.log
     if [[ ! "$2" ]] ; then 
@@ -91,14 +91,14 @@ case "$1" in
     else
       clipp >> $2
     fi  
-	;;
- 	-x|--hide)
+  ;;
+  -x|--hide)
     clipc
-	;;
-	*)
+  ;;
+  *)
     clipc
     clipp >> $xcpDIR/xcp.log
-	;;
+  ;;
 esac
 
 exit 0
